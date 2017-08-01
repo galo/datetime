@@ -1,0 +1,27 @@
+### Java template
+*.class
+target
+
+# Package Files #
+*.jar
+
+# IntelliJ files
+.idea
+*.iml
+
+# VS Code
+.vscode
+
+# Eclipse
+.settings
+.project
+.classpath
+
+# Vagrant files
+.vagrant/*
+
+# George
+?
+
+#VIM swap files
+*.swp

@@ -1,0 +1,38 @@
+#
+# (C) Copyright 2016 HP Development Company, L.P.
+# Confidential computer software. Valid license from HP required for possession, use or copying.
+# Consistent with FAR 12.211 and 12.212, Commercial Computer Software,
+# Computer Software Documentation, and Technical Data for Commercial Items are licensed
+# to the U.S. Government under vendor's standard commercial license.
+#
+
+# Multi staged build - https://docs.docker.com/engine/userguide/eng-image/multistage-build/#use-multi-stage-builds
+FROM maven:3.5.0-jdk-8-alpine
+WORKDIR /app
+COPY . /app
+RUN mvn clean install
+
+# base-image for node on any machine using a template variable,
+# see more about dockerfile templates here: http://docs.resin.io/deployment/docker-templates/
+# and about resin base images here: http://docs.resin.io/runtime/resin-base-images/
+# Note the node:slim image doesn't have node-gyp
+FROM resin/%%RESIN_MACHINE_NAME%%-openjdk
+MAINTAINER Galo Gimenez <galo@hp.com>
+
+# Enable systemd init system in container
+ENV INITSYSTEM on
+
+# Add datetime image
+RUN mkdir -p /app
+ADD ./application/src/main/resources/images/black_duck.jpg /app/image.jpg
+
+# Add the entry point
+ADD ./build/docker/run.sh /app/run.sh
+RUN chmod 755 /app/run.sh
+
+# Add the entry point
+EXPOSE 80 80
+
+CMD ["/app/run.sh"]
+
+COPY --from=0 /app/application/target/ccp-crs-datetime.jar /app/ccp-crs-datetime.jar

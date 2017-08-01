@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    (C) Copyright 2016 HP Development Company, L.P.
+    Confidential computer software. Valid license from HP required for possession, use or copying.
+    Consistent with FAR 12.211 and 12.212, Commercial Computer Software,
+    Computer Software Documentation, and Technical Data for Commercial Items are licensed
+    to the U.S. Government under vendor's standard commercial license.
+
+-->
+
+<!-- ================================================================= -->
+<!-- HP Commercial Cloud CRS Date Time Application                    -->
+<!-- ================================================================= -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.hp.cwp.gcd.test</groupId>
+        <artifactId>test-crs-datetime-project</artifactId>
+        <version>3.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <name>HP Commercial Cloud Services CRS Date Time Service</name>
+    <description>HP Commercial Cloud Services CRS Date Time Service</description>
+    <artifactId>test-crs-datetime-application</artifactId>
+
+    <inceptionYear>2016</inceptionYear>
+    <organization>
+        <name>HP Inc. Development Company, L.P.</name>
+        <url>http://www.hp.com/</url>
+    </organization>
+
+    <prerequisites>
+        <maven>2.0.7</maven>
+    </prerequisites>
+
+    <properties>
+        <start-class>com.hp.ccp.datetime.Application</start-class>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <!-- Import dependency management from Spring Boot -->
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.starter.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+
+        <!-- Spring Boot -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+            <exclusions>
+                <exclusion>
+                    <!--Excluding to add sprint boot log4j -->
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+            <version>1.4.6.RELEASE</version>
+        </dependency>
+        <!-- Prometheus -->
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_spring_boot</artifactId>
+            <version>${prometheus-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient</artifactId>
+            <version>${prometheus-version}</version>
+        </dependency>
+        <!-- Hotspot JVM metrics-->
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_hotspot</artifactId>
+            <version>${prometheus-version}</version>
+        </dependency>
+        <!-- Exposition servlet-->
+        <dependency>
+            <groupId>io.prometheus</groupId>
+            <artifactId>simpleclient_servlet</artifactId>
+            <version>${prometheus-version}</version>
+        </dependency>
+        <!-- Project -->
+        <dependency>
+            <groupId>io.springfox</groupId>
+            <artifactId>springfox-swagger2</artifactId>
+            <version>${springfox-swagger2-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io-version}</version>
+        </dependency>
+        <!-- Test -->
+        <dependency>
+            <groupId>com.googlecode.catch-exception</groupId>
+            <artifactId>catch-exception</artifactId>
+            <version>${catch-exception-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-all</artifactId>
+            <version>${mockito-version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
+            <version>${mockwebserver-version}</version>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <finalName>ccp-crs-datetime</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.5.1</version>
+                <configuration>
+                <source>1.8</source>
+                <target>1.8</target>
+                </configuration>
+            </plugin>
+            <!-- Swagger Plugin -->
+            <plugin>
+                <groupId>com.github.kongchen</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>${swagger-plugin.version}</version>
+                <configuration>
+                    <apiSources>
+                        <apiSource>
+                            <springmvc>true</springmvc>
+                            <locations>com.hp.ccp.datetime.rest</locations>
+                            <schemes>https</schemes>
+                            <host>localhost:8080</host>
+                            <basePath>/date-time</basePath>
+                            <info>
+                                <title>HP Commercial Date Time</title>
+                                <version>v1</version>
+                                <!-- use markdown here because I'm using markdown for output,
+                                if you need to use html or other markup language, you need to use your target language,
+                                 and note escape your description for xml -->
+                                <description>
+                                    HP Commercial Date Time
+                                </description>
+                                <contact>
+                                    <email>ccp_docs@groups.hp.com</email>
+                                </contact>
+                            </info>
+                            <swaggerDirectory>${project.build.directory}/generated-doc/apidocs</swaggerDirectory>
+                        </apiSource>
+                    </apiSources>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Apply more sensible defaults for user projects -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>${start-class}</mainClass>
+                            <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${maven-surefire-plugin.version}</version>
+                <configuration>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <includes>
+                        <include>**/*Tests.java</include>
+                        <include>**/*Test.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/Abstract*.java</exclude>
+                        <exclude>**/*IntegrationTest.java</exclude>
+                    </excludes>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${maven-failsafe-plugin.version}</version>
+                <configuration>
+                    <argLine>${test.opts}</argLine>
+                    <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <includes>
+                        <include>**/*IntegrationTest.java</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/Abstract*.java</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring.boot.starter.version}</version>
+                <configuration>
+                    <mainClass>${start-class}</mainClass>
+                    <executable>true</executable>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

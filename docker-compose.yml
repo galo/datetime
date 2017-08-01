@@ -1,0 +1,32 @@
+#
+# (C) Copyright 2016 HP Development Company, L.P.
+# Confidential computer software. Valid license from HP required for possession, use or copying.
+# Consistent with FAR 12.211 and 12.212, Commercial Computer Software,
+# Computer Software Documentation, and Technical Data for Commercial Items are licensed
+# to the U.S. Government under vendor's standard commercial license.
+#
+
+version: "2"
+services:
+  crs-datetime:
+    container_name: datetime
+    build:
+      context: .
+      args:
+        - NO_PROXY
+        - HTTP_PROXY
+        - HTTPS_PROXY
+        - no_proxy
+        - http_proxy
+        - https_proxy
+    image: hpccp/datetime:latest
+    environment:
+        - AUTH_KEY=authKey-dev
+        - HTTPBIN_URL=https://now.httpbin.org/
+    ports:
+      - "8080:8080"
+      - "8000:8000"
+  redis:
+      image: "redis:alpine"
+      ports:
+        - "6379:6379"
